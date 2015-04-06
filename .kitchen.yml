@@ -32,6 +32,10 @@ platforms:
     run_list:
       - recipe[apt]
       - recipe[zookeeper-apt]
+  - name: centos-7.0
+    run_list:
+      - recipe[yum::default]
+      - recipe[zookeeper-yum]
   - name: centos-6.5
     run_list:
       - recipe[yum::default]
