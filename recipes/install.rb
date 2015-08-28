@@ -32,6 +32,7 @@ include_recipe 'mesos::repo' if node['mesos']['repo']
 
 case node['platform']
 when 'debian', 'ubuntu'
+  systemd_service_path = '/usr/lib/systemd/user'
   %w( unzip default-jre-headless libcurl3 libsvn1).each do |pkg|
     package pkg do
       action :install
@@ -46,6 +47,7 @@ when 'debian', 'ubuntu'
     version "#{node['mesos']['version']}*"
   end
 when 'rhel', 'redhat', 'centos', 'amazon', 'scientific'
+  systemd_service_path = '/usr/lib/systemd/system/'
   at_compile_time do
     package 'yum-utils'
   end
@@ -98,7 +100,7 @@ directory '/etc/mesos-chef'
 template 'mesos-master-init' do
   case node['mesos']['init']
   when 'systemd'
-    path '/usr/lib/systemd/system/mesos-master.service'
+    path "#{systemd_service_path}/mesos-master.service"
     source 'systemd.erb'
   when 'sysvinit_debian'
     path '/etc/init.d/mesos-master'
@@ -114,7 +116,7 @@ end
 template 'mesos-slave-init' do
   case node['mesos']['init']
   when 'systemd'
-    path '/usr/lib/systemd/system/mesos-slave.service'
+    path "#{systemd_service_path}/mesos-slave.service"
     source 'systemd.erb'
   when 'sysvinit_debian'
     path '/etc/init.d/mesos-slave'
